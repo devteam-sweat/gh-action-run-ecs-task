@@ -1,0 +1,30 @@
+{
+  "name": "gh-action-run-ecs-task",
+  "version": "0.1.0",
+  "main": "lib/index.js",
+  "scripts": {
+    "build": "npx tsc",
+    "pack": "ncc build",
+    "precommit": "lint-staged",
+    "test": "jest --coverage --detectOpenHandles --verbose",
+    "all": "npm run build && npm run pack && npm run test"
+  },
+  "keywords": [],
+  "author": "Gus Vine",
+  "license": "ISC",
+  "description": "github action to run an ecs task",
+  "devDependencies": {
+    "@types/jest": "^30.0.0",
+    "@vercel/ncc": "^0.38.4",
+    "aws-sdk-client-mock": "^4.1.0",
+    "aws-sdk-client-mock-jest": "^4.1.0",
+    "jest": "^30.2.0",
+    "ts-jest": "^29.4.5",
+    "ts-loader": "^9.5.4",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "@actions/core": "^1.11.1",
+    "@aws-sdk/client-ecs": "^3.930.0"
+  }
+}

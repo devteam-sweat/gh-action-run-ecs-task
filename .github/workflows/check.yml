@@ -1,0 +1,26 @@
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+name: Check
+
+jobs:
+  check:
+      name: Run Unit Tests
+      runs-on: ubuntu-latest
+      steps:
+      - name: checkout
+        uses: actions/checkout@v5
+
+      - name: setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+
+      - name: run tests
+        run: |
+          npm ci
+          npm test
+          npm run all

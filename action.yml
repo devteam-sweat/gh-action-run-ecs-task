@@ -1,0 +1,28 @@
+name: 'Run ECS Task'
+description: 'Run an ECS Task'
+
+inputs:
+  task-definition:
+    description: 'The family and revision (family:revision) or full ARN of the task definition to run.'
+    required: true
+  ecs-cluster:
+    description: 'The short name or full Amazon Resource Name (ARN) of the cluster on which to run your task.'
+    required: true
+  subnets:
+    description: 'The subnets associated with the task.'
+    required: true
+  security-groups:
+    description: 'The security groups associated with the task.'
+    required: true
+  wait-for-finish:
+    description: 'Whether to wait for the task to finish.'
+    required: false
+    default: 'false'
+  wait-timeout-seconds:
+    description: 'The maximum number of seconds to wait for the task to finish if wait-for-finish is true.'
+    required: false
+    default: '900'
+    
+runs:
+  using: 'node20'
+  main: 'dist/index.js'
