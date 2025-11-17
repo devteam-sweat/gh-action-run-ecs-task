@@ -5,8 +5,9 @@ import {
     RunTaskCommandInput,
     NetworkConfiguration,
     waitUntilTasksStopped,
-    DescribeTasksCommand
+    DescribeTasksCommand,
 } from '@aws-sdk/client-ecs'
+import { SSMClient, GetParameterCommand } from '@aws-sdk/client-ssm'
 
 export function getNetworkConfiguration(): NetworkConfiguration {
     const subnetsInput = core.getInput('subnets')
@@ -90,9 +91,32 @@ export async function waitForTasks(ecsClient: ECSClient, ecsCluster: string, tas
     return true
 }
 
+export async function getTaskDefinition(): Promise<string> {
+    let taskDefinition = core.getInput("task-definition")
+    if (taskDefinition.length > 0) {
+        return taskDefinition
+    }
+
+    const parameterPath = core.getInput("task-definition-from-parameter")
+    if (!parameterPath) {
+        throw new Error('Either task-definition or task-definition-from-parameter input must be provided')
+    }
+
+    const ssmClient = new SSMClient()
+    const getParamOutput = await ssmClient.send(new GetParameterCommand({
+        Name: parameterPath
+    }))
+
+    getParamOutput.Parameter?.Value || (() => {
+        throw new Error(`task-definition-from-parameter SSM Parameter ${parameterPath} has no value`)
+    })()
+
+    return getParamOutput.Parameter!.Value!
+}
+
 export async function run() {
     try {
-        const taskDefinition = core.getInput("task-definition")
+        const taskDefinition = await getTaskDefinition()
         const ecsCluster = core.getInput("ecs-cluster")
         const waitForFinish = core.getInput('wait-for-finish')
         const waitTimeoutSecondsInput = core.getInput('wait-timeout-seconds')
@@ -101,7 +125,6 @@ export async function run() {
         const networkConfiguration = getNetworkConfiguration()
 
         const ecsClient = new ECSClient()
-
         const taskArns = await runTask(ecsClient, taskDefinition, ecsCluster, networkConfiguration)
 
         var success = true

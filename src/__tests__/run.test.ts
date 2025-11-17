@@ -1,5 +1,6 @@
 import * as core from '@actions/core';
 import { ECSClient, RunTaskCommand, DescribeTasksCommand, AssignPublicIp } from '@aws-sdk/client-ecs';
+import { SSMClient, GetParameterCommand } from '@aws-sdk/client-ssm';
 import { mockClient } from 'aws-sdk-client-mock';
 import { run } from '../index';
 
@@ -17,6 +18,7 @@ jest.mock('@aws-sdk/client-ecs', () => {
 import { waitUntilTasksStopped } from '@aws-sdk/client-ecs';
 
 const ecsClientMock = mockClient(ECSClient);
+const ssmClientMock = mockClient(SSMClient);
 
 describe('run', () => {
   const mockGetInput = core.getInput as jest.MockedFunction<typeof core.getInput>;
@@ -27,6 +29,7 @@ describe('run', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     ecsClientMock.reset();
+    ssmClientMock.reset();
   });
 
   it('should run task without waiting when wait-for-finish is false', async () => {
@@ -203,5 +206,51 @@ describe('run', () => {
     await run();
 
     expect(mockWaitUntilTasksStopped).toHaveBeenCalled();
+  });
+
+  it('should fetch task definition from SSM parameter when task-definition-from-parameter is used', async () => {
+    mockGetInput.mockImplementation((name: string) => {
+      if (name === 'task-definition') return '';
+      if (name === 'task-definition-from-parameter') return '/ecs/task-definitions/my-task';
+      if (name === 'ecs-cluster') return 'my-cluster';
+      if (name === 'subnets') return 'subnet-123';
+      if (name === 'security-groups') return 'sg-123';
+      if (name === 'wait-for-finish') return 'false';
+      if (name === 'wait-timeout-seconds') return '900';
+      return '';
+    });
+
+    ssmClientMock.on(GetParameterCommand).resolves({
+      Parameter: {
+        Value: 'my-task:3'
+      }
+    });
+
+    const taskArn = 'arn:aws:ecs:us-east-1:123456789012:task/my-cluster/abc123';
+    ecsClientMock.on(RunTaskCommand).resolves({
+      tasks: [{ taskArn }]
+    });
+
+    await run();
+
+    expect(ssmClientMock.calls()).toHaveLength(1);
+    expect(mockInfo).toHaveBeenCalledWith(`Started task(s): ${taskArn}`);
+    expect(mockSetFailed).not.toHaveBeenCalled();
+  });
+
+  it('should fail when neither task-definition nor task-definition-from-parameter is provided', async () => {
+    mockGetInput.mockImplementation((name: string) => {
+      if (name === 'task-definition') return '';
+      if (name === 'task-definition-from-parameter') return '';
+      if (name === 'ecs-cluster') return 'my-cluster';
+      if (name === 'subnets') return 'subnet-123';
+      if (name === 'security-groups') return 'sg-123';
+      if (name === 'wait-for-finish') return 'false';
+      return '';
+    });
+
+    await run();
+
+    expect(mockSetFailed).toHaveBeenCalledWith('Either task-definition or task-definition-from-parameter input must be provided');
   });
 });

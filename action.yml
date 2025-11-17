@@ -4,7 +4,10 @@ description: 'Run an ECS Task'
 inputs:
   task-definition:
     description: 'The family and revision (family:revision) or full ARN of the task definition to run.'
-    required: true
+    required: false
+  task-definition-from-parameter:
+    description: 'Lookup a task definition from a SSM String parameter.'
+    required: false
   ecs-cluster:
     description: 'The short name or full Amazon Resource Name (ARN) of the cluster on which to run your task.'
     required: true
