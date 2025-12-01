@@ -26,6 +26,6 @@
   "dependencies": {
     "@actions/core": "^1.11.1",
     "@aws-sdk/client-ecs": "^3.932.0",
-    "@aws-sdk/client-ssm": "^3.932.0"
+    "@aws-sdk/client-ssm": "^3.940.0"
   }
 }
