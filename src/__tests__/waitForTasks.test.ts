@@ -1,16 +1,17 @@
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import * as core from '@actions/core';
 import { ECSClient, DescribeTasksCommand } from '@aws-sdk/client-ecs';
 import { mockClient } from 'aws-sdk-client-mock';
-import { waitForTasks } from '../index';
+import { waitForTasks } from '../main';
 
-jest.mock('@actions/core');
+vi.mock('@actions/core');
 
 // Mock the waitUntilTasksStopped function
-jest.mock('@aws-sdk/client-ecs', () => {
-  const actual = jest.requireActual('@aws-sdk/client-ecs');
+vi.mock('@aws-sdk/client-ecs', async (importActual) => {
+  const actual = await importActual<typeof import('@aws-sdk/client-ecs')>();
   return {
     ...actual,
-    waitUntilTasksStopped: jest.fn()
+    waitUntilTasksStopped: vi.fn()
   };
 });
 
@@ -19,12 +20,12 @@ import { waitUntilTasksStopped } from '@aws-sdk/client-ecs';
 const ecsClientMock = mockClient(ECSClient);
 
 describe('waitForTasks', () => {
-  const mockInfo = core.info as jest.MockedFunction<typeof core.info>;
-  const mockError = core.error as jest.MockedFunction<typeof core.error>;
-  const mockWaitUntilTasksStopped = waitUntilTasksStopped as jest.MockedFunction<typeof waitUntilTasksStopped>;
+  const mockInfo = vi.mocked(core.info);
+  const mockError = vi.mocked(core.error);
+  const mockWaitUntilTasksStopped = vi.mocked(waitUntilTasksStopped);
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     ecsClientMock.reset();
   });
 

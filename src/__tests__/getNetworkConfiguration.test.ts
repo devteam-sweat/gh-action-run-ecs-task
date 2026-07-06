@@ -1,13 +1,14 @@
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import * as core from '@actions/core';
-import { getNetworkConfiguration } from '../index';
+import { getNetworkConfiguration } from '../main';
 
-jest.mock('@actions/core');
+vi.mock('@actions/core');
 
 describe('getNetworkConfiguration', () => {
-  const mockGetInput = core.getInput as jest.MockedFunction<typeof core.getInput>;
+  const mockGetInput = vi.mocked(core.getInput);
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('should parse single subnet and security group', () => {
