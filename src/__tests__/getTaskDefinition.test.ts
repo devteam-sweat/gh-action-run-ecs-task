@@ -1,17 +1,18 @@
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import * as core from '@actions/core';
 import { SSMClient, GetParameterCommand } from '@aws-sdk/client-ssm';
 import { mockClient } from 'aws-sdk-client-mock';
-import { getTaskDefinition } from '../index';
+import { getTaskDefinition } from '../main';
 
-jest.mock('@actions/core');
+vi.mock('@actions/core');
 
 const ssmClientMock = mockClient(SSMClient);
 
 describe('getTaskDefinition', () => {
-  const mockGetInput = core.getInput as jest.MockedFunction<typeof core.getInput>;
+  const mockGetInput = vi.mocked(core.getInput);
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     ssmClientMock.reset();
   });
 

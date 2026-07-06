@@ -4,9 +4,9 @@
   "main": "lib/index.js",
   "scripts": {
     "build": "npx tsc",
-    "pack": "ncc build",
+    "pack": "ncc build lib/index.js -o dist",
     "precommit": "lint-staged",
-    "test": "jest --coverage --detectOpenHandles --verbose",
+    "test": "vitest run --coverage",
     "all": "npm run build && npm run pack && npm run test"
   },
   "keywords": [],
@@ -14,17 +14,16 @@
   "license": "ISC",
   "description": "github action to run an ecs task",
   "devDependencies": {
-    "@types/jest": "^30.0.0",
     "@vercel/ncc": "^0.44.1",
+    "@vitest/coverage-v8": "^4.0.0",
     "aws-sdk-client-mock": "^4.1.0",
-    "aws-sdk-client-mock-jest": "^4.1.0",
-    "jest": "^30.4.2",
-    "ts-jest": "^29.4.11",
+    "aws-sdk-client-mock-vitest": "^7.1.0",
     "ts-loader": "^9.6.2",
-    "typescript": "^6.0.3"
+    "typescript": "^6.0.3",
+    "vitest": "^4.0.0"
   },
   "dependencies": {
-    "@actions/core": "^1.11.1",
+    "@actions/core": "^3.0.1",
     "@aws-sdk/client-ecs": "^3.1079.0",
     "@aws-sdk/client-ssm": "^3.1079.0"
   }

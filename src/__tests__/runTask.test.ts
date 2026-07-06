@@ -1,18 +1,19 @@
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import * as core from '@actions/core';
 import { ECSClient, RunTaskCommand, AssignPublicIp } from '@aws-sdk/client-ecs';
 import { mockClient } from 'aws-sdk-client-mock';
-import { runTask } from '../index';
+import { runTask } from '../main';
 
-jest.mock('@actions/core');
+vi.mock('@actions/core');
 
 const ecsClientMock = mockClient(ECSClient);
 
 describe('runTask', () => {
-  const mockInfo = core.info as jest.MockedFunction<typeof core.info>;
-  const mockSetFailed = core.setFailed as jest.MockedFunction<typeof core.setFailed>;
+  const mockInfo = vi.mocked(core.info);
+  const mockSetFailed = vi.mocked(core.setFailed);
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     ecsClientMock.reset();
   });
 
