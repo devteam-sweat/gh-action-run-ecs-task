@@ -15,17 +15,17 @@
   "description": "github action to run an ecs task",
   "devDependencies": {
     "@types/jest": "^30.0.0",
-    "@vercel/ncc": "^0.38.4",
+    "@vercel/ncc": "^0.44.1",
     "aws-sdk-client-mock": "^4.1.0",
     "aws-sdk-client-mock-jest": "^4.1.0",
-    "jest": "^30.2.0",
-    "ts-jest": "^29.4.5",
-    "ts-loader": "^9.5.4",
-    "typescript": "^5.9.3"
+    "jest": "^30.4.2",
+    "ts-jest": "^29.4.11",
+    "ts-loader": "^9.6.2",
+    "typescript": "^6.0.3"
   },
   "dependencies": {
     "@actions/core": "^1.11.1",
-    "@aws-sdk/client-ecs": "^3.932.0",
-    "@aws-sdk/client-ssm": "^3.932.0"
+    "@aws-sdk/client-ecs": "^3.1079.0",
+    "@aws-sdk/client-ssm": "^3.1079.0"
   }
 }
